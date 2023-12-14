@@ -1,0 +1,29 @@
+{
+  "name": "@cortexcloud/shift-schedule",
+  "version": "0.0.188",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "keywords": [
+    "Cortex-UI"
+  ],
+  "author": "Cortex-UI Team",
+  "license": "H Lab Co., Ltd.",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@cortex-ui/core": "^0.0.303",
+    "@cortex-ui/fonts": "^1.0.0",
+    "@cortex-ui/icons": "^1.0.6",
+    "@lit-labs/react": "^1.1.1",
+    "@lit-labs/virtualizer": "^1.0.1",
+    "@types/react": "^18.0.27",
+    "dayjs": "^1.11.8",
+    "lit": "^2.6.1"
+  }
+}
