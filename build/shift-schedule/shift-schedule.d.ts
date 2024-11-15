@@ -207,7 +207,6 @@ export declare class ShiftSchedule extends LitElement {
     updated(changedProp: Map<string, unknown>): void;
     private updateTable;
     private setVacDayOff;
-    private maxDayOffLength;
     private vacDayOff;
     private currentScrollX;
     getDateDisabled(holidays: any, startDate: any, endDate: any): {};

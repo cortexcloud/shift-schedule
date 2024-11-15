@@ -3577,8 +3577,8 @@ export class ShiftSchedule extends LitElement {
             break;
 
           case 'sr':
-            // @ts-ignore
             const scheduleShifts = this.scheduleData?.scheduleShifts?.find(
+              // @ts-ignore
               (res: ScheduleShiftsEntity) => res.shiftName === requestShift
             ) as ScheduleShiftsEntity;
             const dayPart = this.shiftSlotSort[scheduleShifts.shiftSlotId] as 'a' | 'm' | 'n';
