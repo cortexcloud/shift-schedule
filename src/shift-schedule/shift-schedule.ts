@@ -3093,6 +3093,7 @@ export class ShiftSchedule extends LitElement {
       case 'off':
       case 'sem':
       case 'vac':
+        // setTimeout 0 เพื่อรอให้ DOM มัน Change ก่อนค่อยทำการ render
         setTimeout(() => {
           render(
             this.renderDayOffPlanSaved(
