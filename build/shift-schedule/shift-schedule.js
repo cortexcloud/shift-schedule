@@ -63,6 +63,14 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         this.tableWrapperRef = createRef();
         this.dividerRef = createRef();
         this.remarkRef = createRef();
+        // ใช้ arrow fn เพื่อป้องกันปัญหาเรื่อว scope เพราะมีการเรียนใข้จาก event listerner
+        this.setTableWidth = () => {
+            if (this.tableWrapperRef.value) {
+                const tableRect = this.tableWrapperRef.value.getBoundingClientRect();
+                const width = tableRect.width;
+                this.style.setProperty('--table-width', `${width}px`);
+            }
+        };
         this.disableDateArranged = {};
         this.holidayWithKeyMap = {};
         this.isRemoveMode = false;
@@ -321,11 +329,13 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         if (_changedProperties.has('userSelectedIndex'))
             return;
         if (this.tableWrapperRef.value) {
-            const tableRect = this.tableWrapperRef.value.getBoundingClientRect();
-            const width = tableRect.width;
-            this.style.setProperty('--table-width', `${width}px`);
+            this.setTableWidth();
             super.willUpdate(_changedProperties);
         }
+    }
+    firstUpdated(_changedProperties) {
+        // @ts-ignore
+        window.addEventListener('resize', this.setTableWidth);
     }
     renderRequestButton() {
         return html `
@@ -389,8 +399,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         for (const { css, variable } of cssVariables) {
             this.style.setProperty(`--${variable}`, css);
         }
-        // this.scheduleData = await (await fetch('http://localhost:3000/data')).json();
-        // this.requestTypes = await (await fetch('http://localhost:3000/types')).json();
+        this.scheduleData = await (await fetch('http://localhost:3001/data')).json();
+        this.requestTypes = await (await fetch('http://localhost:3001/types')).json();
     }
     setRemoveMode() {
         if (this.currentPopoverRef) {
@@ -2997,6 +3007,7 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
     disconnectedCallback() {
         super.disconnectedCallback();
         ModalCaller.popover().clear();
+        window.removeEventListener('resize', this.setTableWidth);
     }
 };
 __decorate([

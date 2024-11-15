@@ -208,12 +208,26 @@ export class ShiftSchedule extends LitElement {
     if (_changedProperties.has('userSelectedIndex')) return;
 
     if (this.tableWrapperRef.value) {
-      const tableRect = this.tableWrapperRef.value.getBoundingClientRect();
-      const width = tableRect.width;
-      this.style.setProperty('--table-width', `${width}px`);
+      this.setTableWidth();
       super.willUpdate(_changedProperties);
     }
   }
+
+  protected firstUpdated(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    // @ts-ignore
+    window.addEventListener('resize', this.setTableWidth);
+  }
+
+  // ใช้ arrow fn เพื่อป้องกันปัญหาเรื่อว scope เพราะมีการเรียนใข้จาก event listerner
+  setTableWidth = () => {
+    if (this.tableWrapperRef.value) {
+      const tableRect = this.tableWrapperRef.value.getBoundingClientRect();
+      const width = tableRect.width;
+      this.style.setProperty('--table-width', `${width}px`);
+    }
+  };
 
   renderRequestButton() {
     return html`
@@ -286,8 +300,8 @@ export class ShiftSchedule extends LitElement {
     for (const { css, variable } of cssVariables) {
       this.style.setProperty(`--${variable}`, css);
     }
-    // this.scheduleData = await (await fetch('http://localhost:3000/data')).json();
-    // this.requestTypes = await (await fetch('http://localhost:3000/types')).json();
+    this.scheduleData = await (await fetch('http://localhost:3001/data')).json();
+    this.requestTypes = await (await fetch('http://localhost:3001/types')).json();
   }
 
   private setRemoveMode() {
@@ -4081,6 +4095,7 @@ export class ShiftSchedule extends LitElement {
   disconnectedCallback(): void {
     super.disconnectedCallback();
     ModalCaller.popover().clear();
+    window.removeEventListener('resize', this.setTableWidth); 
   }
 }
 declare global {

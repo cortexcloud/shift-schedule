@@ -72,6 +72,8 @@ export declare class ShiftSchedule extends LitElement {
     remarkRef: import("lit-html/directives/ref").Ref<HTMLInputElement>;
     private currentPopoverRef?;
     protected willUpdate(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;
+    protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;
+    setTableWidth: () => void;
     renderRequestButton(): TemplateResult<1>;
     selectRequest(type: RequestType): void;
     private disableDateArranged;
