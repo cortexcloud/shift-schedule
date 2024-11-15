@@ -226,7 +226,8 @@ export class ShiftSchedule extends LitElement {
           text="${type.abbr === 'sem' ? 'อบรม, สัมมนา, ไปราชการ' : type.name}"
           icon="${iconSrc}"
           iconBgColor="${iconBgColor}"
-          accentColor="${accentColor}"></request-button>`;
+          accentColor="${accentColor}"
+        ></request-button>`;
       })}
     `;
   }
@@ -645,7 +646,8 @@ export class ShiftSchedule extends LitElement {
                 <c-box inline h-40 w-1 bg-gray-400></c-box>
                 <div
                   @click="${this.setRemoveMode}"
-                  class="remove-btn remove-btn-active remove-btn-wrapper">
+                  class="remove-btn remove-btn-active remove-btn-wrapper"
+                >
                   <c-box
                     flex-center
                     icon-prefix="16 delete-tag-custom ${this.isRemoveMode
@@ -654,12 +656,14 @@ export class ShiftSchedule extends LitElement {
                     w-44
                     h-44
                     round-full
-                    style="background: var(--${this.isRemoveMode ? 'neutral-500' : 'neutral-200'})">
+                    style="background: var(--${this.isRemoveMode ? 'neutral-500' : 'neutral-200'})"
+                  >
                   </c-box>
                   <div
                     style="color:${this.isRemoveMode
                       ? 'white'
-                      : 'neutral-500'};transition: 0.2s ease">
+                      : 'neutral-500'};transition: 0.2s ease"
+                  >
                     ลบ
                   </div>
                 </div>
@@ -688,7 +692,8 @@ export class ShiftSchedule extends LitElement {
                         ? 'cursor: not-allowed'
                         : 'cursor: pointer'}; width:24px; height:24px; border-radius:50%; display:flex; justify-content:center; align-items:center;"
                       @click="${() =>
-                        this.shouldArrowLeftDisable ? null : this.goToMonth('previous')}"></c-box>
+                        this.shouldArrowLeftDisable ? null : this.goToMonth('previous')}"
+                    ></c-box>
 
                     <c-box
                       w-90
@@ -696,7 +701,8 @@ export class ShiftSchedule extends LitElement {
                       justify-center
                       tx-12
                       tx-gray-600
-                      class="currentMonthTitleDisplay">
+                      class="currentMonthTitleDisplay"
+                    >
                       ${this.currentMonthTitleDisplay
                         ? html`<span
                             >${dayjs(new Date(this.currentMonthTitleDisplay!)).format(
@@ -719,7 +725,8 @@ export class ShiftSchedule extends LitElement {
                         ? 'cursor: not-allowed'
                         : 'cursor: pointer'}; width:24px; height:24px; border-radius:50%; display:flex; justify-content:center; align-items:center;"
                       @click="${() =>
-                        this.shouldArrowRightDisable ? null : this.goToMonth('next')}"></c-box>
+                        this.shouldArrowRightDisable ? null : this.goToMonth('next')}"
+                    ></c-box>
                   </c-box>
                   ${this.dateBetween?.map((dateBet) => {
                     return html`
@@ -729,7 +736,8 @@ export class ShiftSchedule extends LitElement {
                           border-bottom-solid
                           border-bottom-1
                           pl-12
-                          border-box>
+                          border-box
+                        >
                           <c-box h-30></c-box>
                         </c-box>
 
@@ -773,7 +781,8 @@ export class ShiftSchedule extends LitElement {
                                         ? 'first-date-of-month'
                                         : this.dateBetween?.[0].dateBetween[0][0].getDate() !== 1
                                         ? 'start-date-of-month'
-                                        : ''} ${isSunday} tableLineUI weekDayUI ${isWeekendBg}">
+                                        : ''} ${isSunday} tableLineUI weekDayUI ${isWeekendBg}"
+                                    >
                                       <c-box tx-12 tx-gray-500>
                                         ${date ? dayjs(new Date(date)).format('dd') : undefined}
                                       </c-box>
@@ -785,7 +794,8 @@ export class ShiftSchedule extends LitElement {
                                           ? 'var(--gray-500)'
                                           : 'var(--gray-800)'}; font-weight: ${isHoliday
                                           ? '600'
-                                          : '400'}">
+                                          : '400'}"
+                                      >
                                         ${date ? dayjs(new Date(date)).format('D') : undefined}
                                       </c-box>
                                     </c-box>`;
@@ -804,7 +814,8 @@ export class ShiftSchedule extends LitElement {
               <div
                 id="week-month-user"
                 style="height:${this
-                  .maxHeight}; width:var(--table-width); display:inline-flex; flex-flow:column;">
+                  .maxHeight}; width:var(--table-width); display:inline-flex; flex-flow:column;"
+              >
                 <div class="lit-virtualizer">
                   ${(this.scheduleData as SchedulingData)?.schedulePractitioner?.map(
                     (practitioner, indexUser) => {
@@ -841,7 +852,8 @@ export class ShiftSchedule extends LitElement {
                                 })
                               );
                             }
-                          }}">
+                          }}"
+                        >
                           <div
                             @mouseenter="${this.viewerRole === 'manager'
                               ? (e: MouseEvent) => this.managerHoverUser(indexUser, e, practitioner)
@@ -867,7 +879,8 @@ export class ShiftSchedule extends LitElement {
                                   })
                                 );
                               }
-                            }}">
+                            }}"
+                          >
                             <div style="position:relative; top:0; left:0">
                               <div
                                 style="border-radius:50%; display:flex; justify-content:center; align-items:center;"
@@ -879,18 +892,21 @@ export class ShiftSchedule extends LitElement {
                                   indexUser === this.userSelectedIndex &&
                                   this.startFocusWithViewMode)
                                   ? 'user-border-focus'
-                                  : ''}">
+                                  : ''}"
+                              >
                                 <div
                                   style="border-radius:50%; display:flex; justify-content:center; align-items:center; border: 2px solid var(--${gender ===
                                   'M'
                                     ? 'color-6-400'
-                                    : 'color-9-500'})">
+                                    : 'color-9-500'})"
+                                >
                                   <img
                                     style="border-radius: 50%"
                                     width="32px"
                                     height="32px"
                                     src="${this.userImgDefault || ''}"
-                                    alt="" />
+                                    alt=""
+                                  />
                                 </div>
                               </div>
 
@@ -898,7 +914,8 @@ export class ShiftSchedule extends LitElement {
                                 class="gender-box"
                                 style="background: var(--${gender === 'M'
                                   ? 'color-6-400'
-                                  : 'color-9-500'});">
+                                  : 'color-9-500'});"
+                              >
                                 ${genderType[gender as 'M' | 'F']}
                               </div>
                             </div>
@@ -963,7 +980,8 @@ export class ShiftSchedule extends LitElement {
                                         indexUser === this.userSelectedIndex &&
                                         this.startFocusWithViewMode)
                                         ? 'focus-divider'
-                                        : ''} ${isWeekend || isHoliday ? 'bg-pinky' : ''}">
+                                        : ''} ${isWeekend || isHoliday ? 'bg-pinky' : ''}"
+                                    >
                                       <div
                                         style="opacity:${(this.viewerRole === 'staff' &&
                                           indexUser === 0) ||
@@ -977,7 +995,8 @@ export class ShiftSchedule extends LitElement {
                                         (this.requestSelected?.abbr === 'vac' &&
                                           this.vacDayOff?.[practitioner.practitioner.id] === 0)
                                           ? 'cursor:not-allowed'
-                                          : ''}">
+                                          : ''}"
+                                      >
                                         <!-- if have request date then render request -->
 
                                         <!-- when saving -->
@@ -1194,7 +1213,8 @@ export class ShiftSchedule extends LitElement {
                 )
               );
             }
-          : null}">
+          : null}"
+      >
         ${this.renderWoffSavedHost(dateString, practitioner, data, type, date, indexUser)}
       </c-box>
     `;
@@ -1230,7 +1250,8 @@ export class ShiftSchedule extends LitElement {
         @click="${this.isRemoveMode
           ? () => this.removeWoffSaved(dateString, practitioner, data)
           : null}"
-        items-center></c-box>
+        items-center
+      ></c-box>
     </c-box>`;
   }
 
@@ -1263,7 +1284,8 @@ export class ShiftSchedule extends LitElement {
       h-full
       style="${checkMaxLength ? 'pointer-events:none' : this.isRemoveMode ? 'cursor:pointer' : ''}"
       shift-type="sr-saved"
-      slot="host">
+      slot="host"
+    >
       ${planEntries
         ?.sort((a, b) => {
           const indexMap =
@@ -1281,7 +1303,8 @@ export class ShiftSchedule extends LitElement {
                 border-box
                 round-6
                 style="min-height:44px"
-                bg="${this.setColorRequestType(dayPart as DayPart)}">
+                bg="${this.setColorRequestType(dayPart as DayPart)}"
+              >
                 <c-box>
                   <c-box class="icon-daypart-sr" flex flex-col>
                     <c-box flex flex-col row-gap-4 tx-12
@@ -1354,7 +1377,8 @@ export class ShiftSchedule extends LitElement {
           : () => {
               this.saveWoffRequest(date, practitioner, dateString);
               this.requestUpdate();
-            }}">
+            }}"
+      >
         ${planEntries.length
           ? this.renderSrSavedHost(dateString, practitioner, planEntries)
           : this.renderEmptyDateForSelect(
@@ -1480,7 +1504,8 @@ export class ShiftSchedule extends LitElement {
           flex
           flex-col
           tx-12
-          icon-prefix="16 ${icon} ${icColor}">
+          icon-prefix="16 ${icon} ${icColor}"
+        >
           ${this.remarkCache[remarkCacheId]}
         </c-box>`
       : html`<c-box
@@ -1490,7 +1515,8 @@ export class ShiftSchedule extends LitElement {
           justify-center
           items-center
           h-full
-          icon-prefix="26 ${icon} ${icColor}">
+          icon-prefix="26 ${icon} ${icColor}"
+        >
         </c-box>`}`;
   }
 
@@ -1511,7 +1537,8 @@ export class ShiftSchedule extends LitElement {
       h-full
       w-full
       slot="host"
-      shift-type="${type}-saved">
+      shift-type="${type}-saved"
+    >
       <c-box
         data-date-id="${data.dateString}-${indexUser}"
         id="${cellId}-${data.dateString}"
@@ -1581,7 +1608,8 @@ export class ShiftSchedule extends LitElement {
           : () => {
               this.saveWoffRequest(date, practitioner, data.dateString!);
               this.requestUpdate();
-            }}">
+            }}"
+      >
         ${this.renderDayOffHost(data, type, practitioner)}
       </c-box>
     </c-box>`;
@@ -1690,7 +1718,8 @@ export class ShiftSchedule extends LitElement {
       shift-type="sr-init"
       slot="host"
       cursor="${this.requestSelected || this.isRemoveMode ? 'pointer' : 'default'}"
-      @click="${this.isRemoveMode ? () => this.removeInitialSr(practitioner, dateString) : null}">
+      @click="${this.isRemoveMode ? () => this.removeInitialSr(practitioner, dateString) : null}"
+    >
       ${Object.entries(request.arrangedRequest!)
         .sort((a, b) => {
           const indexMap =
@@ -1707,11 +1736,13 @@ export class ShiftSchedule extends LitElement {
                 border-box
                 round-6
                 style="min-height:44px"
-                bg="${this.setColorRequestType(dayPart as DayPart)}">
+                bg="${this.setColorRequestType(dayPart as DayPart)}"
+              >
                 <div
                   style="cursor:${this.requestSelected || this.isRemoveMode
                     ? 'pointer'
-                    : ''}; width:100%; height:100%">
+                    : ''}; width:100%; height:100%"
+                >
                   <c-box>
                     <c-box class="icon-daypart-sr" flex flex-col>
                       <c-box flex flex-col row-gap-4 tx-12
@@ -1789,7 +1820,8 @@ export class ShiftSchedule extends LitElement {
               : () => {
                   this.saveWoffRequest(date, practitioner, dateString);
                   this.requestUpdate();
-                }}">
+                }}"
+          >
             ${this.renderSrInitialHost(request, practitioner, dateString)}
           </c-box>
         `;
@@ -1824,7 +1856,8 @@ export class ShiftSchedule extends LitElement {
                     )
                   );
                 }
-              : null}">
+              : null}"
+          >
             ${this.renderWoffSavedHost(
               dateString,
               practitioner,
@@ -1884,7 +1917,8 @@ export class ShiftSchedule extends LitElement {
               : () => {
                   this.saveWoffRequest(date, practitioner, dateString);
                   this.requestUpdate();
-                }}">
+                }}"
+          >
             ${this.renderDayOffPlanSaved(
               {
                 dateString,
@@ -2558,12 +2592,14 @@ export class ShiftSchedule extends LitElement {
           <c-box>
             <c-box
               class="cx-shift-schedule__iconTitleWrapper"
-              style="border:1px solid var(--${iconSoftColor})!important">
+              style="border:1px solid var(--${iconSoftColor})!important"
+            >
               <c-box
                 class="cx-shift-schedule__iconTitle"
                 icon-prefix="16 ${requestTypeStyles[this.requestSelected?.abbr!]
                   .iconSrc} ${accentColor}"
-                style="background:var(--${iconSoftColor}) !important"></c-box>
+                style="background:var(--${iconSoftColor}) !important"
+              ></c-box>
               <c-box tx-14 tx-gray-600> ${title[this.requestSelected?.abbr!]} </c-box>
             </c-box>
             <c-box mt-12 flex items-center flex justify-between>
@@ -2629,7 +2665,8 @@ export class ShiftSchedule extends LitElement {
               .var="${{
                 heightInput: '44',
                 widthInput: '312',
-              } as CXDatePicker.Var}"></cx-datepicker>
+              } as CXDatePicker.Var}"
+            ></cx-datepicker>
           </c-box>
 
           <c-box mt-12>หมายเหตุ</c-box>
@@ -2646,7 +2683,8 @@ export class ShiftSchedule extends LitElement {
               ${ref(this.remarkRef)}
               type="text"
               style="border:none;outline:none;width:200px"
-              placeholder="หมายเหตุเพิ่มเติม" />
+              placeholder="หมายเหตุเพิ่มเติม"
+            />
           </c-box>
         </c-box>
       </c-box>
@@ -2713,7 +2751,8 @@ export class ShiftSchedule extends LitElement {
             focusout: 'none',
             mouseleave: 'none',
             transform: 'center',
-          } as CXPopover.Set}">
+          } as CXPopover.Set}"
+        >
           ${popoverHost} ${popoverContent}
         </cx-popover>
       `;
@@ -2770,7 +2809,8 @@ export class ShiftSchedule extends LitElement {
                   dateString,
                   indexUser
                 )
-              )}">
+              )}"
+          >
             ${this.renderEmptyBox(
               date,
               'display',
@@ -2825,7 +2865,8 @@ export class ShiftSchedule extends LitElement {
                   indexUser
                 )
               );
-            }}">
+            }}"
+          >
             ${this.renderEmptyBox(
               date,
               'display',
@@ -2842,7 +2883,8 @@ export class ShiftSchedule extends LitElement {
           <c-box
             w-full
             h-full
-            style="${this.shouldNotAllowedWeekOffSelect ? 'pointer-events: none' : ''}">
+            style="${this.shouldNotAllowedWeekOffSelect ? 'pointer-events: none' : ''}"
+          >
             ${this.renderEmptyBox(date, 'select', 'woff', practitioner, dateString, indexUser)}
           </c-box>
         `;
@@ -3113,7 +3155,8 @@ export class ShiftSchedule extends LitElement {
                 <c-box class="cx-shift-schedule__iconTitleWrapper">
                   <c-box
                     icon-prefix="16 emoji-wink-custom primary-500"
-                    class="cx-shift-schedule__iconTitle"></c-box>
+                    class="cx-shift-schedule__iconTitle"
+                  ></c-box>
                   <c-box tx-14> ขอเข้าเวร </c-box>
                 </c-box>
                 <c-box class="cx-shift-schedule__titleSrWrapper">
@@ -3406,7 +3449,8 @@ export class ShiftSchedule extends LitElement {
               }
               this.selectDateRequest(date, type, practitioner, dateString);
             }
-          : null}">
+          : null}"
+      >
         <c-box
           transition="all 0.2s ease"
           ui-hover="_1: bg-primary-100!"
@@ -3424,7 +3468,8 @@ export class ShiftSchedule extends LitElement {
           justify-center
           items-center
           cursor-pointer
-          icon-prefix-hover="16 plus-line primary-300"></c-box>
+          icon-prefix-hover="16 plus-line primary-300"
+        ></c-box>
       </c-box>
     `;
   }
