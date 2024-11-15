@@ -317,6 +317,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
             }
         }
         if (_changedProperties.has('scheduleData')) {
+            // ต้อง sortUserByCreatedAt() ก่อนที่จะมีการ moveUserToFirstArray()
+            this.sortUserByCreatedAt();
             this.moveUserToFirstArray();
             this.dateBetween = this.getDateBetween(new Date(this.scheduleData?.startDate), new Date(this.scheduleData?.endDate));
         }
@@ -399,8 +401,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         for (const { css, variable } of cssVariables) {
             this.style.setProperty(`--${variable}`, css);
         }
-        this.scheduleData = await (await fetch('http://localhost:3001/data')).json();
-        this.requestTypes = await (await fetch('http://localhost:3001/types')).json();
+        // this.scheduleData = await (await fetch('http://localhost:3001/data')).json();
+        // this.requestTypes = await (await fetch('http://localhost:3001/types')).json();
     }
     setRemoveMode() {
         if (this.currentPopoverRef) {
@@ -2669,6 +2671,12 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
+    }
+    sortUserByCreatedAt() {
+        this.scheduleData?.schedulePractitioner?.sort((a, b) => {
+            return (new Date(a.practitioner.createdAt).getTime() -
+                new Date(b.practitioner.createdAt).getTime());
+        });
     }
     moveUserToFirstArray() {
         const index = this.scheduleData?.schedulePractitioner?.findIndex((obj) => {

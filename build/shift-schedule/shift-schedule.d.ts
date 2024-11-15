@@ -199,6 +199,7 @@ export declare class ShiftSchedule extends LitElement {
     lateColor(requestTime: DayPart): "color-12-100" | "color-4-100" | "color-7-100";
     setColorRequestType(requestTime: DayPart): string;
     convertDateToString(date: Date): string;
+    private sortUserByCreatedAt;
     private moveUserToFirstArray;
     private shouldNotAllowedWeekOffSelect?;
     private scrollValueFirstDateMonth?;
