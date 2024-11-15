@@ -63,6 +63,14 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         this.tableWrapperRef = createRef();
         this.dividerRef = createRef();
         this.remarkRef = createRef();
+        // ใช้ arrow fn เพื่อป้องกันปัญหาเรื่อว scope เพราะมีการเรียนใข้จาก event listerner
+        this.setTableWidth = () => {
+            if (this.tableWrapperRef.value) {
+                const tableRect = this.tableWrapperRef.value.getBoundingClientRect();
+                const width = tableRect.width;
+                this.style.setProperty('--table-width', `${width}px`);
+            }
+        };
         this.disableDateArranged = {};
         this.holidayWithKeyMap = {};
         this.isRemoveMode = false;
@@ -289,7 +297,6 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         this.shouldScrollErrorTarget = false;
         this.initialScroll = false;
         this.firstTableUpdated = false;
-        this.maxDayOffLength = {};
         this.vacDayOff = {};
         this.currentScrollX = 0;
         this.reduceDate = (date, n) => {
@@ -310,6 +317,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
             }
         }
         if (_changedProperties.has('scheduleData')) {
+            // ต้อง sortUserByCreatedAt() ก่อนที่จะมีการ moveUserToFirstArray()
+            this.sortUserByCreatedAt();
             this.moveUserToFirstArray();
             this.dateBetween = this.getDateBetween(new Date(this.scheduleData?.startDate), new Date(this.scheduleData?.endDate));
         }
@@ -322,11 +331,13 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         if (_changedProperties.has('userSelectedIndex'))
             return;
         if (this.tableWrapperRef.value) {
-            const tableRect = this.tableWrapperRef.value.getBoundingClientRect();
-            const width = tableRect.width;
-            this.style.setProperty('--table-width', `${width}px`);
+            this.setTableWidth();
             super.willUpdate(_changedProperties);
         }
+    }
+    firstUpdated(_changedProperties) {
+        // @ts-ignore
+        window.addEventListener('resize', this.setTableWidth);
     }
     renderRequestButton() {
         return html `
@@ -339,7 +350,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
           text="${type.abbr === 'sem' ? 'อบรม, สัมมนา, ไปราชการ' : type.name}"
           icon="${iconSrc}"
           iconBgColor="${iconBgColor}"
-          accentColor="${accentColor}"></request-button>`;
+          accentColor="${accentColor}"
+        ></request-button>`;
         })}
     `;
     }
@@ -389,8 +401,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         for (const { css, variable } of cssVariables) {
             this.style.setProperty(`--${variable}`, css);
         }
-        // this.scheduleData = await (await fetch('http://localhost:3000/data')).json();
-        // this.requestTypes = await (await fetch('http://localhost:3000/types')).json();
+        // this.scheduleData = await (await fetch('http://localhost:3001/data')).json();
+        // this.requestTypes = await (await fetch('http://localhost:3001/types')).json();
     }
     setRemoveMode() {
         if (this.currentPopoverRef) {
@@ -722,7 +734,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                 <c-box inline h-40 w-1 bg-gray-400></c-box>
                 <div
                   @click="${this.setRemoveMode}"
-                  class="remove-btn remove-btn-active remove-btn-wrapper">
+                  class="remove-btn remove-btn-active remove-btn-wrapper"
+                >
                   <c-box
                     flex-center
                     icon-prefix="16 delete-tag-custom ${this.isRemoveMode
@@ -731,12 +744,14 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                     w-44
                     h-44
                     round-full
-                    style="background: var(--${this.isRemoveMode ? 'neutral-500' : 'neutral-200'})">
+                    style="background: var(--${this.isRemoveMode ? 'neutral-500' : 'neutral-200'})"
+                  >
                   </c-box>
                   <div
                     style="color:${this.isRemoveMode
                 ? 'white'
-                : 'neutral-500'};transition: 0.2s ease">
+                : 'neutral-500'};transition: 0.2s ease"
+                  >
                     ลบ
                   </div>
                 </div>
@@ -764,7 +779,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                       style="${this.shouldArrowLeftDisable
             ? 'cursor: not-allowed'
             : 'cursor: pointer'}; width:24px; height:24px; border-radius:50%; display:flex; justify-content:center; align-items:center;"
-                      @click="${() => this.shouldArrowLeftDisable ? null : this.goToMonth('previous')}"></c-box>
+                      @click="${() => this.shouldArrowLeftDisable ? null : this.goToMonth('previous')}"
+                    ></c-box>
 
                     <c-box
                       w-90
@@ -772,7 +788,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                       justify-center
                       tx-12
                       tx-gray-600
-                      class="currentMonthTitleDisplay">
+                      class="currentMonthTitleDisplay"
+                    >
                       ${this.currentMonthTitleDisplay
             ? html `<span
                             >${dayjs(new Date(this.currentMonthTitleDisplay)).format('MMMM BBBB')}</span
@@ -792,7 +809,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                       style="${this.shouldArrowRightDisable
             ? 'cursor: not-allowed'
             : 'cursor: pointer'}; width:24px; height:24px; border-radius:50%; display:flex; justify-content:center; align-items:center;"
-                      @click="${() => this.shouldArrowRightDisable ? null : this.goToMonth('next')}"></c-box>
+                      @click="${() => this.shouldArrowRightDisable ? null : this.goToMonth('next')}"
+                    ></c-box>
                   </c-box>
                   ${this.dateBetween?.map((dateBet) => {
             return html `
@@ -802,7 +820,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                           border-bottom-solid
                           border-bottom-1
                           pl-12
-                          border-box>
+                          border-box
+                        >
                           <c-box h-30></c-box>
                         </c-box>
 
@@ -837,7 +856,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                         ? 'first-date-of-month'
                         : this.dateBetween?.[0].dateBetween[0][0].getDate() !== 1
                             ? 'start-date-of-month'
-                            : ''} ${isSunday} tableLineUI weekDayUI ${isWeekendBg}">
+                            : ''} ${isSunday} tableLineUI weekDayUI ${isWeekendBg}"
+                                    >
                                       <c-box tx-12 tx-gray-500>
                                         ${date ? dayjs(new Date(date)).format('dd') : undefined}
                                       </c-box>
@@ -849,7 +869,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                             ? 'var(--gray-500)'
                             : 'var(--gray-800)'}; font-weight: ${isHoliday
                         ? '600'
-                        : '400'}">
+                        : '400'}"
+                                      >
                                         ${date ? dayjs(new Date(date)).format('D') : undefined}
                                       </c-box>
                                     </c-box>`;
@@ -868,11 +889,11 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
               <div
                 id="week-month-user"
                 style="height:${this
-            .maxHeight}; width:var(--table-width); display:inline-flex; flex-flow:column;">
+            .maxHeight}; width:var(--table-width); display:inline-flex; flex-flow:column;"
+              >
                 <div class="lit-virtualizer">
                   ${this.scheduleData?.schedulePractitioner?.map((practitioner, indexUser) => {
             const { practitioner: { gender, nameFamily, nameGiven, practitionerLevel, practitionerRole, }, schedulePractitionerRequest: request, } = practitioner;
-            // TODO: bug table not display
             const requestData = this.convertRequestDatesToObject(request);
             const targetUser = practitioner?.practitionerId === this.practitionerId;
             return html `
@@ -891,7 +912,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                         detail: { practitioner: practitioner },
                     }));
                 }
-            }}">
+            }}"
+                        >
                           <div
                             @mouseenter="${this.viewerRole === 'manager'
                 ? (e) => this.managerHoverUser(indexUser, e, practitioner)
@@ -915,7 +937,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                         detail: { practitioner: practitioner },
                     }));
                 }
-            }}">
+            }}"
+                          >
                             <div style="position:relative; top:0; left:0">
                               <div
                                 style="border-radius:50%; display:flex; justify-content:center; align-items:center;"
@@ -927,18 +950,21 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                     indexUser === this.userSelectedIndex &&
                     this.startFocusWithViewMode)
                 ? 'user-border-focus'
-                : ''}">
+                : ''}"
+                              >
                                 <div
                                   style="border-radius:50%; display:flex; justify-content:center; align-items:center; border: 2px solid var(--${gender ===
                 'M'
                 ? 'color-6-400'
-                : 'color-9-500'})">
+                : 'color-9-500'})"
+                                >
                                   <img
                                     style="border-radius: 50%"
                                     width="32px"
                                     height="32px"
                                     src="${this.userImgDefault || ''}"
-                                    alt="" />
+                                    alt=""
+                                  />
                                 </div>
                               </div>
 
@@ -946,7 +972,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                                 class="gender-box"
                                 style="background: var(--${gender === 'M'
                 ? 'color-6-400'
-                : 'color-9-500'});">
+                : 'color-9-500'});"
+                              >
                                 ${genderType[gender]}
                               </div>
                             </div>
@@ -996,7 +1023,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                                 indexUser === this.userSelectedIndex &&
                                 this.startFocusWithViewMode)
                             ? 'focus-divider'
-                            : ''} ${isWeekend || isHoliday ? 'bg-pinky' : ''}">
+                            : ''} ${isWeekend || isHoliday ? 'bg-pinky' : ''}"
+                                    >
                                       <div
                                         style="opacity:${(this.viewerRole === 'staff' &&
                             indexUser === 0) ||
@@ -1010,7 +1038,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                             (this.requestSelected?.abbr === 'vac' &&
                                 this.vacDayOff?.[practitioner.practitioner.id] === 0)
                             ? 'cursor:not-allowed'
-                            : ''}">
+                            : ''}"
+                                      >
                                         <!-- if have request date then render request -->
 
                                         <!-- when saving -->
@@ -1140,7 +1169,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                     event: e,
                 }), this.renderWoffSavedHost(dateString, practitioner, { initial: true }, 'woff', date, indexUser));
             }
-            : null}">
+            : null}"
+      >
         ${this.renderWoffSavedHost(dateString, practitioner, data, type, date, indexUser)}
       </c-box>
     `;
@@ -1168,7 +1198,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         @click="${this.isRemoveMode
             ? () => this.removeWoffSaved(dateString, practitioner, data)
             : null}"
-        items-center></c-box>
+        items-center
+      ></c-box>
     </c-box>`;
     }
     removeSrPlan(dateString, practitioner, removeMode) {
@@ -1192,7 +1223,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
       h-full
       style="${checkMaxLength ? 'pointer-events:none' : this.isRemoveMode ? 'cursor:pointer' : ''}"
       shift-type="sr-saved"
-      slot="host">
+      slot="host"
+    >
       ${planEntries
             ?.sort((a, b) => {
             const indexMap = this.timePeriod === 'early' ? { m: 0, a: 1, n: 2 } : { m: 1, a: 2, n: 0 };
@@ -1209,7 +1241,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                 border-box
                 round-6
                 style="min-height:44px"
-                bg="${this.setColorRequestType(dayPart)}">
+                bg="${this.setColorRequestType(dayPart)}"
+              >
                 <c-box>
                   <c-box class="icon-daypart-sr" flex flex-col>
                     <c-box flex flex-col row-gap-4 tx-12
@@ -1261,7 +1294,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
             : () => {
                 this.saveWoffRequest(date, practitioner, dateString);
                 this.requestUpdate();
-            }}">
+            }}"
+      >
         ${planEntries.length
             ? this.renderSrSavedHost(dateString, practitioner, planEntries)
             : this.renderEmptyDateForSelect(new Date(dateString), practitioner, dateString, indexUser)}
@@ -1351,7 +1385,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
           flex
           flex-col
           tx-12
-          icon-prefix="16 ${icon} ${icColor}">
+          icon-prefix="16 ${icon} ${icColor}"
+        >
           ${this.remarkCache[remarkCacheId]}
         </c-box>`
             : html `<c-box
@@ -1361,7 +1396,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
           justify-center
           items-center
           h-full
-          icon-prefix="26 ${icon} ${icColor}">
+          icon-prefix="26 ${icon} ${icColor}"
+        >
         </c-box>`}`;
     }
     renderDayOffPlanSaved(data, type, practitioner, date, indexUser, cancel) {
@@ -1373,7 +1409,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
       h-full
       w-full
       slot="host"
-      shift-type="${type}-saved">
+      shift-type="${type}-saved"
+    >
       <c-box
         data-date-id="${data.dateString}-${indexUser}"
         id="${cellId}-${data.dateString}"
@@ -1433,7 +1470,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                 : () => {
                     this.saveWoffRequest(date, practitioner, data.dateString);
                     this.requestUpdate();
-                }}">
+                }}"
+      >
         ${this.renderDayOffHost(data, type, practitioner)}
       </c-box>
     </c-box>`;
@@ -1516,7 +1554,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
       shift-type="sr-init"
       slot="host"
       cursor="${this.requestSelected || this.isRemoveMode ? 'pointer' : 'default'}"
-      @click="${this.isRemoveMode ? () => this.removeInitialSr(practitioner, dateString) : null}">
+      @click="${this.isRemoveMode ? () => this.removeInitialSr(practitioner, dateString) : null}"
+    >
       ${Object.entries(request.arrangedRequest)
             .sort((a, b) => {
             const indexMap = this.timePeriod === 'early' ? { m: 0, a: 1, n: 2 } : { m: 1, a: 2, n: 0 };
@@ -1532,11 +1571,13 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                 border-box
                 round-6
                 style="min-height:44px"
-                bg="${this.setColorRequestType(dayPart)}">
+                bg="${this.setColorRequestType(dayPart)}"
+              >
                 <div
                   style="cursor:${this.requestSelected || this.isRemoveMode
                 ? 'pointer'
-                : ''}; width:100%; height:100%">
+                : ''}; width:100%; height:100%"
+                >
                   <c-box>
                     <c-box class="icon-daypart-sr" flex flex-col>
                       <c-box flex flex-col row-gap-4 tx-12
@@ -1599,7 +1640,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                     : () => {
                         this.saveWoffRequest(date, practitioner, dateString);
                         this.requestUpdate();
-                    }}">
+                    }}"
+          >
             ${this.renderSrInitialHost(request, practitioner, dateString)}
           </c-box>
         `;
@@ -1620,7 +1662,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                             practitioner,
                         }, this.getPopoverByRequest({ ...popoverObj, event: e }), this.renderWoffSavedHost(dateString, practitioner, { initial: true }, 'woff', date, indexUser));
                     }
-                    : null}">
+                    : null}"
+          >
             ${this.renderWoffSavedHost(dateString, practitioner, { initial: true }, 'woff', date, indexUser)}
           </c-box>
         `;
@@ -1659,7 +1702,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                     : () => {
                         this.saveWoffRequest(date, practitioner, dateString);
                         this.requestUpdate();
-                    }}">
+                    }}"
+          >
             ${this.renderDayOffPlanSaved({
                     dateString,
                     remark: request.remark,
@@ -1922,12 +1966,14 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
           <c-box>
             <c-box
               class="cx-shift-schedule__iconTitleWrapper"
-              style="border:1px solid var(--${iconSoftColor})!important">
+              style="border:1px solid var(--${iconSoftColor})!important"
+            >
               <c-box
                 class="cx-shift-schedule__iconTitle"
                 icon-prefix="16 ${requestTypeStyles[this.requestSelected?.abbr]
             .iconSrc} ${accentColor}"
-                style="background:var(--${iconSoftColor}) !important"></c-box>
+                style="background:var(--${iconSoftColor}) !important"
+              ></c-box>
               <c-box tx-14 tx-gray-600> ${title[this.requestSelected?.abbr]} </c-box>
             </c-box>
             <c-box mt-12 flex items-center flex justify-between>
@@ -1974,7 +2020,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
               .var="${{
             heightInput: '44',
             widthInput: '312',
-        }}"></cx-datepicker>
+        }}"
+            ></cx-datepicker>
           </c-box>
 
           <c-box mt-12>หมายเหตุ</c-box>
@@ -1991,7 +2038,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
               ${ref(this.remarkRef)}
               type="text"
               style="border:none;outline:none;width:200px"
-              placeholder="หมายเหตุเพิ่มเติม" />
+              placeholder="หมายเหตุเพิ่มเติม"
+            />
           </c-box>
         </c-box>
       </c-box>
@@ -2040,7 +2088,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                 focusout: 'none',
                 mouseleave: 'none',
                 transform: 'center',
-            }}">
+            }}"
+        >
           ${popoverHost} ${popoverContent}
         </cx-popover>
       `;
@@ -2076,7 +2125,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                     dateString: this.convertDateToString(date),
                     indexUser,
                     event,
-                }), this.renderEmptyBox(date, 'select', this.requestSelected?.abbr, practitioner, dateString, indexUser))}">
+                }), this.renderEmptyBox(date, 'select', this.requestSelected?.abbr, practitioner, dateString, indexUser))}"
+          >
             ${this.renderEmptyBox(date, 'display', this.requestSelected?.abbr, practitioner, dateString, indexUser)}
           </c-box>
         `;
@@ -2109,7 +2159,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                         event: e,
                         indexUser,
                     }), this.renderEmptyBox(date, 'select', this.requestSelected?.abbr, practitioner, dateString, indexUser));
-                }}">
+                }}"
+          >
             ${this.renderEmptyBox(date, 'display', this.requestSelected?.abbr, practitioner, dateString, indexUser)}
           </c-box>
         `;
@@ -2118,7 +2169,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
           <c-box
             w-full
             h-full
-            style="${this.shouldNotAllowedWeekOffSelect ? 'pointer-events: none' : ''}">
+            style="${this.shouldNotAllowedWeekOffSelect ? 'pointer-events: none' : ''}"
+          >
             ${this.renderEmptyBox(date, 'select', 'woff', practitioner, dateString, indexUser)}
           </c-box>
         `;
@@ -2299,7 +2351,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                 <c-box class="cx-shift-schedule__iconTitleWrapper">
                   <c-box
                     icon-prefix="16 emoji-wink-custom primary-500"
-                    class="cx-shift-schedule__iconTitle"></c-box>
+                    class="cx-shift-schedule__iconTitle"
+                  ></c-box>
                   <c-box tx-14> ขอเข้าเวร </c-box>
                 </c-box>
                 <c-box class="cx-shift-schedule__titleSrWrapper">
@@ -2483,7 +2536,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                 }
                 this.selectDateRequest(date, type, practitioner, dateString);
             }
-            : null}">
+            : null}"
+      >
         <c-box
           transition="all 0.2s ease"
           ui-hover="_1: bg-primary-100!"
@@ -2501,7 +2555,8 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
           justify-center
           items-center
           cursor-pointer
-          icon-prefix-hover="16 plus-line primary-300"></c-box>
+          icon-prefix-hover="16 plus-line primary-300"
+        ></c-box>
       </c-box>
     `;
     }
@@ -2565,8 +2620,9 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
                         result[requestDate] = { ...result[requestDate] };
                         break;
                     case 'sr':
+                        const scheduleShifts = this.scheduleData?.scheduleShifts?.find(
                         // @ts-ignore
-                        const scheduleShifts = this.scheduleData?.scheduleShifts?.find((res) => res.shiftName === requestShift);
+                        (res) => res.shiftName === requestShift);
                         const dayPart = this.shiftSlotSort[scheduleShifts.shiftSlotId];
                         if (!result[requestDate]) {
                             result[requestDate] = { arrangedRequest: {}, ...item };
@@ -2615,6 +2671,12 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
+    }
+    sortUserByCreatedAt() {
+        this.scheduleData?.schedulePractitioner?.sort((a, b) => {
+            return (new Date(a.practitioner.createdAt).getTime() -
+                new Date(b.practitioner.createdAt).getTime());
+        });
     }
     moveUserToFirstArray() {
         const index = this.scheduleData?.schedulePractitioner?.findIndex((obj) => {
@@ -2806,16 +2868,6 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
         if (typeof this.vacDayOff[practitioner.practitioner.id] === 'number')
             return;
         if ((practitioner && this.requestSelected?.abbr === 'vac') || allowedExecute) {
-            // const initialOff = (
-            //   practitioner.schedulePractitionerRequest as SchedulePractitionerRequestEntity[]
-            // ).filter((res) => res.requestType.abbr === 'vac');
-            // const saveVac = Object.keys(this.shiftVacRequestSaved?.[practitioner.id]?.request || {});
-            // this.mayDayOffLength = initialOff.length + savedOff.length;
-            // if (!this.maxDayOffLength?.[(practitioner.practitioner as any).id]) {
-            //   (this.maxDayOffLength as any)[(practitioner.practitioner as any).id] = {};
-            // }
-            // this.maxDayOffLength[(practitioner.practitioner as any).id].vacation =
-            //   initialOff.length + saveVac.length;
             // cache initial value
             const findVacation = practitioner.practitioner.vacations.find((res) => res.year === new Date(this.currentTime).getFullYear());
             this.vacDayOff[practitioner.practitioner.id] = findVacation.vacation;
@@ -2963,6 +3015,7 @@ let ShiftSchedule = class ShiftSchedule extends LitElement {
     disconnectedCallback() {
         super.disconnectedCallback();
         ModalCaller.popover().clear();
+        window.removeEventListener('resize', this.setTableWidth);
     }
 };
 __decorate([

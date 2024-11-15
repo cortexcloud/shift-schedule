@@ -72,6 +72,8 @@ export declare class ShiftSchedule extends LitElement {
     remarkRef: import("lit-html/directives/ref").Ref<HTMLInputElement>;
     private currentPopoverRef?;
     protected willUpdate(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;
+    protected firstUpdated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;
+    setTableWidth: () => void;
     renderRequestButton(): TemplateResult<1>;
     selectRequest(type: RequestType): void;
     private disableDateArranged;
@@ -197,6 +199,7 @@ export declare class ShiftSchedule extends LitElement {
     lateColor(requestTime: DayPart): "color-12-100" | "color-4-100" | "color-7-100";
     setColorRequestType(requestTime: DayPart): string;
     convertDateToString(date: Date): string;
+    private sortUserByCreatedAt;
     private moveUserToFirstArray;
     private shouldNotAllowedWeekOffSelect?;
     private scrollValueFirstDateMonth?;
@@ -207,7 +210,6 @@ export declare class ShiftSchedule extends LitElement {
     updated(changedProp: Map<string, unknown>): void;
     private updateTable;
     private setVacDayOff;
-    private maxDayOffLength;
     private vacDayOff;
     private currentScrollX;
     getDateDisabled(holidays: any, startDate: any, endDate: any): {};
