@@ -1,6 +1,6 @@
 {
   "name": "@cortexcloud/shift-schedule",
-  "version": "0.0.188",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "build": "tsc"
